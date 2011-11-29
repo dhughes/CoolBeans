@@ -4,8 +4,8 @@ on ColdSpring for ColdFusion and Spring IOC for Java.  It's a single js file and
 
 To use CoolBeans you simply create an instance of the CoolBeans and load the configuration file like this:
 
-var cb = require("CoolBeans");
-cb = new cb("./config/dev.json");
+``var cb = require("CoolBeans");
+``cb = new cb("./config/dev.json");
 
 The above code is the only require function you should need in your entire application.  Once you've required CoolBeans
 you need to create a new instance and pass in the path to its' configuration.  This is shown above.
@@ -16,21 +16,21 @@ its' configuration.  The config file for CoolBeans is a JSON file so the entire 
 Each element in the root of the configuration file is a bean (bean = Java for object) that CoolBeans can create.  Here's an
 example:
 
-{
-	"fs": {"module": "fs"}
-}
+``{
+``	"fs": {"module": "fs"}
+``}
 
 This is essentially the same as:
 
-var fs = require("fs");
+``var fs = require("fs");
 
 However, we now only need to define this one time for an application, rather than in each file that requires it.
 
 You can also specify paths to modules that are not node_modules. For example:
 
-{
-	"Recipient": {"module": "../entities/recipient"}
-}
+``{
+``	"Recipient": {"module": "../entities/recipient"}
+``}
 
 At the most basic, the above means that CoolBeans will call require for the module and cache the results in a variable named
 Recipient.
@@ -38,25 +38,25 @@ Recipient.
 You can get any of the configured beans by calling cb.get("beanName") where beanName is the name of the bean you want
 to get.  For example:
 
-cb.get("Recipient");
+``cb.get("Recipient");
 
 The above will lazily create the Recipient bean, cache it as a singleton, and return it.
 
 You can get a lot more complex with configuration too.  For example, you can specify if CoolBeans should call a constructor
 and what arguments to pass into the constructor.  For example:
 
-"codeGenerator": {
-	"module": "../util/codeGenerator",
-	"constructorArgs": [
-		"foo",
-		123
-	]
-}
+``"codeGenerator": {
+``	"module": "../util/codeGenerator",
+``	"constructorArgs": [
+``		"foo",
+``		123
+``	]
+``}
 
 What the above is saying is that when we get the codeGenerator bean, we need to load the module specified then call
 new on the module and pass in the values specified in the constructorArgs section to the constructor. The above means:
 
-new codeGenerator("foo", 123);
+``new codeGenerator("foo", 123);
 
 You can also specify more complex values to pass into constructor arguments:
 
