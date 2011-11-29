@@ -60,85 +60,85 @@ new on the module and pass in the values specified in the constructorArgs sectio
 
 You can also specify more complex values to pass into constructor arguments:
 
-"codeGenerator": {
-	"module": "../util/codeGenerator",
-	"constructorArgs": [
-		"foo",
-		123,
-		{"value": [1, 2, 3]},
-		{"value":
-			{
-				"foo": "bar",
-				"bar": "foo"
+	"codeGenerator": {
+		"module": "../util/codeGenerator",
+		"constructorArgs": [
+			"foo",
+			123,
+			{"value": [1, 2, 3]},
+			{"value":
+				{
+					"foo": "bar",
+					"bar": "foo"
+				}
 			}
-		}
-	]
-}
+		]
+	}
 
 Note that while you can in a string without indicating explicitly it's a "value", for arrays and anonymous objects you
 need to provide an object with a property named "value" whose value is the value you're trying to pass in.  The above
 could be written more explicitly as:
 
-"codeGenerator": {
-	"module": "../util/codeGenerator",
-	"constructorArgs": [
-		{"value": "foo"},
-		{"value": 123},
-		{"value": [1, 2, 3]},
-		{"value":
-			{
-				"foo": "bar",
-				"bar": "foo"
+	"codeGenerator": {
+		"module": "../util/codeGenerator",
+		"constructorArgs": [
+			{"value": "foo"},
+			{"value": 123},
+			{"value": [1, 2, 3]},
+			{"value":
+				{
+					"foo": "bar",
+					"bar": "foo"
+				}
 			}
-		}
-	]
-}
+		]
+	}
 
 Strings, numbers, arrays, and anonymous objects are not the only things you can pass into constructors.  You can also
 specify other beans that could be passed in.  For example, let's say we had a database configuration object you want to
 pass into any object that is used to access data you could do the following:
 
-"mysql": {"module": "mysql"},
-
-"dbConfig": {
-	"properties": {
-		"host": "server.hostname.com",
-		"port": 3306,
-		"user": "mysqlUser",
-		"password": "password123",
-		"database": "foobar"
+	"mysql": {"module": "mysql"},
+	
+	"dbConfig": {
+		"properties": {
+			"host": "server.hostname.com",
+			"port": 3306,
+			"user": "mysqlUser",
+			"password": "password123",
+			"database": "foobar"
+		}
+	},
+	
+	"recipientDao": {
+		"module": "../db/recipientDao",
+		"constructorArgs": [
+			{"bean": "dbConfig"},
+			{"bean": "mysql"}
+		]
 	}
-},
-
-"recipientDao": {
-	"module": "../db/recipientDao",
-	"constructorArgs": [
-		{"bean": "dbConfig"},
-		{"bean": "mysql"}
-	]
-}
 
 The mysql bean is simply the same as saying require("mysql").  The dbConfig is an anonymous object with properties
 specified (more on this in a bit).  When the recipientDao (dao = data access object) CoolBeans will see the "bean" property
 and will create and pass into the constructor the fully-constructed dbConfig object and the mysql object. Here's what
 that recipientDao might look like:
 
-module.exports = function(dbConfig, mysql){
-
-	this.listRecipients = function(userId, callback){
-		var client = mysql.createClient(dbConfig);
-		client.query(
-			"SELECT id, name, addressLine1, IfNull(addressLine2, '') as addressLine2, city, state, zip, taxDeductible, created, updated, 0 as netDonations " +
-			"FROM recipient " +
-			"WHERE userId = ? AND deleted = 0 "+
-			"ORDER BY name",
-		[userId],
-		function(err, results, fields){
-			client.end();
-			callback(results);
-		});
+	module.exports = function(dbConfig, mysql){
+	
+		this.listRecipients = function(userId, callback){
+			var client = mysql.createClient(dbConfig);
+			client.query(
+				"SELECT id, name, addressLine1, IfNull(addressLine2, '') as addressLine2, city, state, zip, taxDeductible, created, updated, 0 as netDonations " +
+				"FROM recipient " +
+				"WHERE userId = ? AND deleted = 0 "+
+				"ORDER BY name",
+			[userId],
+			function(err, results, fields){
+				client.end();
+				callback(results);
+			});
+		}
 	}
-}
 
 Note that there are no require statements.  The object just gets its dependencies when it's instantiated and can
 immediately use them.  These dependencies are also automatically singletons.
@@ -147,43 +147,43 @@ Also note that if you want to use a transient object you would still create an i
 
 I also mentioned above that CoolBeans can be used to create create and populate anonymous objects.  For example:
 
-"dbConfig": {
-	"properties": {
+	"dbConfig": {
+		"properties": {
+			"host": "server.hostname.com",
+			"port": 3306,
+			"user": "mysqlUser",
+			"password": "password123",
+			"database": "foobar"
+		}
+	}
+
+This is a somewhat long-winded way of saying
+
+	dbConfig = {
 		"host": "server.hostname.com",
 		"port": 3306,
 		"user": "mysqlUser",
 		"password": "password123",
 		"database": "foobar"
-	}
-}
-
-This is a somewhat long-winded way of saying
-
-dbConfig = {
-	"host": "server.hostname.com",
-	"port": 3306,
-	"user": "mysqlUser",
-	"password": "password123",
-	"database": "foobar"
-};
+	};
 
 However, once this object is configured in CoolBeans you can easily pass it into other objects when they are created.
 
 You can also specify properties for not-anonymous objects. You can also mix and match constructorArgs and properties.
 For example:
 
-"creditCardDao": {
-	"module": "../db/creditCardDao",
-	"constructorArgs": [
-		{"bean": "dbConfig"},
-		{"bean": "authorize"},
-		{"bean": "mysql"},
-		{"bean": "CreditCard"}
-	],
-	"properties": {
-		"service": {"bean": "service"}
+	"creditCardDao": {
+		"module": "../db/creditCardDao",
+		"constructorArgs": [
+			{"bean": "dbConfig"},
+			{"bean": "authorize"},
+			{"bean": "mysql"},
+			{"bean": "CreditCard"}
+		],
+		"properties": {
+			"service": {"bean": "service"}
+		}
 	}
-}
 
 When CoolBeans creates the creditCardDao it will first load all the beans specified in the constructorArgs. It will then
 create the creditCardDao and pass in the four already-created beans to the constructor.  Once the object is constructed
@@ -196,38 +196,38 @@ There are a few other interesting capabilities of CoolBeans:
 
 Beans don't have to be lazily loaded.  You can set a bean to load when the container loads.  For example:
 
-"dateFormat": {
-	"module": "../util/dateFormat",
-	"lazy": false
-}
+	"dateFormat": {
+		"module": "../util/dateFormat",
+		"lazy": false
+	}
 
 Also, if you have a factory that is used to construct other objects, you can specify this using the factoryBean and
 factoryMethod properties.  For example:
 
-"knox": {"module": "knox"},
-
-"s3client": {
-	"factoryBean": "knox",
-	"factoryMethod": "createClient",
-	"constructorArgs": [
-		{"value":
-			{
-				"key": "myKey",
-				"secret": "mySecret",
-				"bucket": "myBucket"
+	"knox": {"module": "knox"},
+	
+	"s3client": {
+		"factoryBean": "knox",
+		"factoryMethod": "createClient",
+		"constructorArgs": [
+			{"value":
+				{
+					"key": "myKey",
+					"secret": "mySecret",
+					"bucket": "myBucket"
+				}
 			}
-		}
-	]
-}
+		]
+	}
 
 The above s3client bean is configured so CoolBeans uses knox to create it.  The constructor args are passed into the
 factoryMethod as if it were a constructor.  The above essentially boils down to:
 
-s3client = knox.createClient({
-	"key": "myKey",
-	"secret": "mySecret",
-	"bucket": "myBucket"
-});
+	s3client = knox.createClient({
+		"key": "myKey",
+		"secret": "mySecret",
+		"bucket": "myBucket"
+	});
 
 The really nice thing about CoolBeans is that it lets the objects in your system stay focused on what they do best.  It
 shouldn't be your object's responsibility to know what they need to work.  They should simply get what they need to work
