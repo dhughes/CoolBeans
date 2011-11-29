@@ -87,7 +87,7 @@ You can also specify more complex values to pass into constructor arguments:
 		]
 	}
 
-Note that while you can in a string without indicating explicitly it's a "value", for arrays and anonymous objects you
+Note that while you can specify a string without indicating explicitly it's a "value", for arrays and anonymous objects you
 need to provide an object with a property named "value" whose value is the value you're trying to pass in.  The above
 could be written more explicitly as:
 
@@ -131,7 +131,7 @@ pass into any object that is used to access data you could do the following:
 	}
 
 The mysql bean is simply the same as saying require("mysql").  The dbConfig is an anonymous object with properties
-specified (more on this in a bit).  When the recipientDao (dao = data access object) CoolBeans will see the "bean" property
+specified (more on this in a bit).  When the recipientDao (dao = data access object) is created, CoolBeans will see the "bean" property
 and will create and pass into the constructor the fully-constructed dbConfig object and the mysql object. Here's what
 that recipientDao might look like:
 
@@ -152,7 +152,7 @@ that recipientDao might look like:
 		}
 	}
 
-Note that there are no require statements.  The object just gets its dependencies when it's instantiated and can
+Note that there are no require statements.  The object just gets its' dependencies when it's instantiated and can
 immediately use them.  These dependencies are also automatically singletons.
 
 Also note that if you want to use a transient object you would still create an instance of it the way you always have.
@@ -200,7 +200,7 @@ For example:
 When CoolBeans creates the creditCardDao it will first load all the beans specified in the constructorArgs. It will then
 create the creditCardDao and pass in the four already-created beans to the constructor.  Once the object is constructed
 it will set the service property on the object to the specified service bean.  Note, CoolBeans will look for a setter and use
-that if it can find it.  For example, the service property above will first look for a function named setservice (note
+that if it can find it.  For example, in the service property above, ColdBooks will first look for a function named setservice (note
 that this is case sensitive).  If it can find it, it will pass in the service bean to that function.  If not, it will
 simply set a public property on the object.
 
