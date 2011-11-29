@@ -2,6 +2,10 @@
 CoolBeans is an Inversion of Control (IOC) / Dependency Injection (DI) library for Node.js. CoolBeans is loosely based
 on ColdSpring for ColdFusion and Spring IOC for Java.  It's a single js file and currently appears to be quick and easy.
 
+To install:
+
+	npm install CoolBeans
+
 To use CoolBeans you simply create an instance of the CoolBeans and load the configuration file like this:
 
 	var cb = require("CoolBeans");
