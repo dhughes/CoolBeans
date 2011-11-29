@@ -29,11 +29,19 @@ However, we now only need to define this one time for an application, rather tha
 You can also specify paths to modules that are not node_modules. For example:
 
 	{
-		"Recipient": {"module": "../entities/recipient"}
+		"Recipient": {"module": "./entities/recipient"}
 	}
 
 At the most basic, the above means that CoolBeans will call require for the module and cache the results in a variable named
 Recipient.
+
+As a relative newb to Node.js, I think I've handled this correctly.  CoolBeans is a node module which means that NPM
+will install into ./node_modues/CoolBeans.  The actual CoolBeans script is in the lib directory.  That means, that from
+the perspective of CoolBeans your components are three directories above it.  For this reason, CoolBeans looks three
+directories above it for the module specified.  So, the Recipient module above actually turns into
+../../.././entities/recipient.  This has the effect of making the paths to modules specified in the configuration file
+relative to the root of your module or application.  So, if you make a module that depends on CoolBeans and later
+publish it via NPM I think it should work correctly when used in other projects.
 
 You can get any of the configured beans by calling cb.get("beanName") where beanName is the name of the bean you want
 to get.  For example:
@@ -46,7 +54,7 @@ You can get a lot more complex with configuration too.  For example, you can spe
 and what arguments to pass into the constructor.  For example:
 
 	"codeGenerator": {
-		"module": "../util/codeGenerator",
+		"module": "./util/codeGenerator",
 		"constructorArgs": [
 			"foo",
 			123
@@ -61,7 +69,7 @@ new on the module and pass in the values specified in the constructorArgs sectio
 You can also specify more complex values to pass into constructor arguments:
 
 	"codeGenerator": {
-		"module": "../util/codeGenerator",
+		"module": "./util/codeGenerator",
 		"constructorArgs": [
 			"foo",
 			123,
@@ -80,7 +88,7 @@ need to provide an object with a property named "value" whose value is the value
 could be written more explicitly as:
 
 	"codeGenerator": {
-		"module": "../util/codeGenerator",
+		"module": "./util/codeGenerator",
 		"constructorArgs": [
 			{"value": "foo"},
 			{"value": 123},
@@ -111,7 +119,7 @@ pass into any object that is used to access data you could do the following:
 	},
 	
 	"recipientDao": {
-		"module": "../db/recipientDao",
+		"module": "./db/recipientDao",
 		"constructorArgs": [
 			{"bean": "dbConfig"},
 			{"bean": "mysql"}
@@ -173,7 +181,7 @@ You can also specify properties for not-anonymous objects. You can also mix and 
 For example:
 
 	"creditCardDao": {
-		"module": "../db/creditCardDao",
+		"module": "./db/creditCardDao",
 		"constructorArgs": [
 			{"bean": "dbConfig"},
 			{"bean": "authorize"},
@@ -197,7 +205,7 @@ There are a few other interesting capabilities of CoolBeans:
 Beans don't have to be lazily loaded.  You can set a bean to load when the container loads.  For example:
 
 	"dateFormat": {
-		"module": "../util/dateFormat",
+		"module": "./util/dateFormat",
 		"lazy": false
 	}
 
