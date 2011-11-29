@@ -1,0 +1,180 @@
+{
+	"xmlbuilder": {"module": "xmlbuilder"},
+	"url":  {"module": "url"},
+	"https": {"module": "https"},
+	"libxml-to-js": {"module": "libxml-to-js"},
+	"mysql": {"module": "mysql"},
+	"knox": {"module": "knox"},
+	"async": {"module": "async"},
+	"crypto": {"module": "crypto"},
+	"Canvas": {"module": "canvas"},
+	"fs": {"module": "fs"},
+	"QRCode": {"module": "qrcode"},
+	"express": {"module": "express"},
+
+	"Recipient": {"module": "../entities/recipient"},
+	"Code": {"module": "../entities/code"},
+	"CreditCard": {"module": "../entities/creditCard"},
+	"User": {"module": "../entities/user"},
+
+	"app": {
+		"factoryBean": "appLoader",
+		"factoryMethod": "loadApp",
+		"constructorArgs": [
+			8080,
+			8433,
+			"./keys/privatekey.pem",
+			"./keys/certificate.pem"
+		]
+	},
+
+	"appLoader": {
+		"module": "../util/appLoader",
+		"constructorArgs": [
+			{"bean": "express"},
+			{"bean": "fs"}
+		]
+	},
+
+	"dateFormat": {
+		"module": "../util/dateFormat",
+		"lazy": false
+	},
+
+	"codeGenerator": {
+		"module": "../util/codeGenerator",
+		"constructorArgs": [
+			{"bean": "s3client"},
+			{"bean": "Canvas"},
+			{"bean": "fs"},
+			{"bean": "QRCode"},
+			{"bean": "async"}
+		]
+	},
+
+	"authorize": {
+		"module": "../util/authorize-net-cim",
+		"constructorArgs": [
+			{"bean": "xmlbuilder"},
+			{"bean": "url"},
+			{"bean": "https"},
+			{"bean": "libxml-to-js"},
+			"some value",
+			"another value",
+			"https://apitest.authorize.net/xml/v1/request.api"
+		]
+	},
+
+	"s3client": {
+		"factoryBean": "knox",
+		"factoryMethod": "createClient",
+		"constructorArgs": [
+			{"value":
+				{
+					"key": "my key",
+					"secret": "my secret",
+					"bucket": "my bucket"
+				}
+			}
+		]
+	},
+
+	"dbConfig": {
+		"properties": {
+			"host": "serverName",
+			"port": 3306,
+			"user": "userName",
+			"password": "password",
+			"database": "databaseName"
+		}
+	},
+
+	"recipientDao": {
+		"module": "../db/recipientDao",
+		"constructorArgs": [
+			{"bean": "dbConfig"},
+			{"bean": "mysql"},
+			{"bean": "Recipient"}
+		]
+	},
+
+	"codeDao": {
+		"module": "../db/codeDao",
+		"constructorArgs": [
+			{"bean": "dbConfig"},
+			{"bean": "s3client"},
+			{"bean": "mysql"},
+			{"bean": "Code"}
+		]
+	},
+
+	"creditCardDao": {
+		"module": "../db/creditCardDao",
+		"constructorArgs": [
+			{"bean": "dbConfig"},
+			{"bean": "authorize"},
+			{"bean": "mysql"},
+			{"bean": "CreditCard"}
+		],
+		"properties": {
+			"service": {"bean": "service"}
+		}
+	},
+
+	"userDao": {
+		"module": "../db/userDao",
+		"constructorArgs": [
+			{"bean": "dbConfig"},
+			{"bean": "authorize"},
+			{"bean": "mysql"},
+			{"bean": "User"},
+			{"bean": "async"},
+			{"bean": "crypto"},
+			"some salt phrase"
+		]
+	},
+
+	"recipientValidator": {
+		"module": "../validators/recipientValidator",
+		"constructorArgs": []
+	},
+
+	"codeValidator": {
+		"module": "../validators/codeValidator",
+		"constructorArgs": [
+			{"bean": "recipientDao"}
+		]
+	},
+
+	"creditCardValidator": {
+		"module": "../validators/creditCardValidator",
+		"constructorArgs": [
+			{"bean": "creditCardDao"}
+		]
+	},
+
+	"userValidator": {
+		"module": "../validators/userValidator",
+		"constructorArgs": [
+			{"bean": "userDao"}
+		]
+	},
+
+	"service": {
+		"module": "../service/service",
+		"constructorArgs": [
+			{"bean": "authorize"},
+			{"bean": "recipientDao"},
+			{"bean": "codeDao"},
+			{"bean": "creditCardDao"},
+			{"bean": "userDao"},
+			{"bean": "codeGenerator"},
+			{"value": ["localhost", "supporting.us", "qb.alagad.com:8433"]},
+			{"bean": "recipientValidator"},
+			{"bean": "codeValidator"},
+			{"bean": "creditCardValidator"},
+			{"bean": "userValidator"}
+		]
+	}
+}
+
