@@ -1,6 +1,6 @@
 {
 	"name": "CoolBeans",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "CoolBeans is an Inversion of Control (IOC) / Dependency Injection (DI) library for Node.js. CoolBeans is loosely based on ColdSpring for ColdFusion and Spring IOC for Java.",
 	"keywords": ["CoolBeans", "IOC", "Inversion of Control", "DI", "Dependency Injection", "Spring", "factory"],
 	"homepage": "https://github.com/dhughes/CoolBeans",
@@ -9,7 +9,7 @@
 		"email": "dhughes@alagad.com",
 		"url": "http://blog.alagad.com"
 	},
-	"main": "./lib/CoolBeans.js",
+	"main": "index",
 	"engine": "node >= 0.4.1", 
 	"repository": {
 		"type": "git",
