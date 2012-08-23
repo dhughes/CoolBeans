@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/dhughes/CoolBeans.png)](http://travis-ci.org/dhughes/CoolBeans)
 
 CoolBeans is an Inversion of Control (IOC) / Dependency Injection (DI) library for Node.js. CoolBeans is loosely based
 on ColdSpring for ColdFusion and Spring IOC for Java.  CoolBeans allows you to decouple your objects from their dependencies.
