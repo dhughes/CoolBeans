@@ -275,6 +275,20 @@ factoryMethod as if it were a constructor.  The above essentially boils down to:
 		"bucket": "myBucket"
 	});
 
+Also, if you have a function that is used to construct other objects, you can specify this using the factoryBean property.  For example:
+
+	"express" : {
+        "module" : "express"
+    },
+    "app" : {
+        "factoryBean" : "express"
+    },
+
+The above app bean is configured so CoolBeans uses express to create it.  The above essentially boils down to:
+
+    var express = require('express');
+	var app = express();
+
 Version 0.0.8 or CoolBeans introduced autowiring.  Autowiring can be used so that you don't have to explicitly specify
 constructor args or property values.  Consider this example from above:
 
